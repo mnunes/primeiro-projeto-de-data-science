@@ -1,18 +1,8 @@
----
-title: "Primeiro Projeto de Data Science"
-author: "Marcus Nunes"
-date: "6/9/2018"
-output: html_document
----
-
-
 # Introdução
 
-O principal objetivo deste texto é mostrar como é possível, utilizando apenas recursos gratuitos na internet, realizar um projeto de data science do início ao fim. Este texto tem dois objetivos principais:
+O principal objetivo deste texto é mostrar como é possível, utilizando apenas recursos gratuitos na internet, realizar um projeto de data science do início ao fim. Vamos treinar um algoritmo de classificação de dados baseado em uma técnica chamada [Random Forest (link em inglês, pois a Wikipedia em Português ainda não possui um verbete sobre este assunto)](https://en.wikipedia.org/wiki/Random_forest)], capaz de realizar tanto tarefas de classificação quanto de regressão.
 
-1. Mostrar que dinheiro sobrando não é um requisito fundamental para trabalhar com data science
-
-2. Data science não é um bicho de sete cabeças
+O público alvo deste texto são pessoas que já tem alguma experiência com Estatística e estão interessados em aprender melhor como aplicar estes conhecimentos já adquiridos em uma área nova, como machine learning. Pessoas com menos experiência talvez tenham um pouco mais de dificuldade na leitura, mas tenho certeza que, ao procederem com calma e atenção, serão recompensados e aprenderão muito.
 
 
 
@@ -26,7 +16,7 @@ Se o seu computador não possua o R e o RStudio instalado, clique nos links abai
 
 * [R](http://cran.fiocruz.br/): este programa é o cerne da análise. É ele que vai realizar os cálculos e plotar os gráficos da análise.
 
-* [RStudio](https://www.rstudio.com/products/rstudio/download/): por padrão, a interface do R não é muito amigável de utilizar. É necessário melhorá-la para que ela fique mais interativa e, consequentemente, nossa produtividade aumente.  Portanto, o RStudio serve para melhorar a utilização do R, deixando-a mais dinâmica. 
+* [RStudio](https://www.rstudio.com/products/rstudio/download/): a interface padrão do R não é muito amigável de utilizar. Entretanto, é possível melhorá-la para que ela fique mais interativa. Desta forma, nossa produtividade aumenta.  Portanto, o RStudio serve para melhorar a utilização do R, deixando-a mais dinâmica. 
 
 Uma característica do R é que suas funções podem ser expandidas com comandos e funções criados pela comunidade. E são milhares (se não forem milhões) de expansões assim. Estas expansões estão em pacotes que podem ser instalados via internet. Para instalar os pacotes extras necessários para esta análise, abra o RStudio e vá ao menu File > New File > R Script, como mostra a figura abaixo:
 
@@ -36,6 +26,7 @@ Com o script aberto, rode o comando abaixo e aguarde. Vários arquivos serão ba
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=TRUE, eval=TRUE)
+set.seed(1234)
 ```
 
 ```{r pacotes, eval=FALSE}
@@ -48,44 +39,6 @@ Com tudo preparado, é hora de começar a análise.
 
 
 
-# Obtenção dos Dados
-
-Obter dados para análise é algo trivial hoje em dia. Existem diversos sites que disponibilizam todo tipo de dados para as mais diversas tarefas. Abaixo eu listo algumas das minhas fontes preferidas para buscar dados abertos, colocadas mais ou menos em ordem de preferência e importância:
-
-* [Kaggle](https://kaggle.com/datasets/): Acredito que este seja, atualmente, o maior site sobre machine learning. Possui muitos conjuntos de dados disponíveis, nas mais variadas áreas. Além dos dados, há diversos projetos de machine learning já realizados nele, fazendo com que seja uma fonte quase inesgotável de informação.
-
-* [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml/): Este é o pai do Kaggle. Na época em que fiz meu primeiro curso de data mining, ainda durante meu doutorado no longínquo ano de 2010, este site era minha fonte principal de conjuntos de dados para classificação e clusterização.
-
-* [Instituto Brasileiro de Geografia e Estatística (IBGE)](http://downloads.ibge.gov.br/): O site do IBGE disponibiliza informações sobre os censos, PNAD e tudo mais que o IBGE trabalha.
-	
-* [Banco Central do Brasil](http://www4.bcb.gov.br/pec/series/port/aviso.asp): Dados históricos sobre inflação, câmbio, exportações e mais.
-
-* [Portal Brasileiro de Dados Abertos](http://dados.gov.br): Informações oficiais do governo brasileiro sobre mapas, orçamento da união, aviação, dentre outros assuntos.
-
-* [Portal da Transparência](http://www.transparencia.gov.br/): Dados do executivos brasileiro, como salários, pagamentos de programas sociais e muito mais.
-
-* [Dados Abertos da Câmara dos Deputados](http://www2.camara.leg.br/transparencia/cota-para-exercicio-da-atividade-parlamentar/dados-abertos-cota-parlamentar): Informações a respeitos dos gastos da Câmara. Embora sejam abertos, é um pouco difícil de acessar para quem não entende de tecnologias como xml e json. Por isso, escrevi um [pacote no R](https://github.com/mnunes/reembolsos/) que organiza estes dados de maneira a torná-los mais acessíveis.
-
-* [Gene Expression Omnibus (GEO)](http://www.ncbi.nlm.nih.gov/geo/): Fonte de dados genéticos. É possível encontrar dados de artigos científicos e reproduzir os resultados obtidos pelos autores.
-
-* [The home of the U.S. Government’s open data](http://www.data.gov/): Site de dados abertos do governo norte-americano. Possui milhares de conjuntos de dados.
-
-* [IMDb](http://www.imdb.com/interfaces): Dados abertos que o [IMDb](http://imdb.com/), site especializado em filmes e séries de TV, disponibiliza. Vale muito pelas avaliações que os usuários do site dão para as produções audiovisuais cadastradas no site. 
-
-* [Economic Time Series Page](http://www.economagic.com/): Dados de séries temporais econométricas.
-
-* [Time Series Data Library](https://datamarket.com/data/list/?q=provider:tsdl): Fonte excelente para quem procura dados de séries temporais, sejam eles econométricos ou não.
-
-Além destas fontes de terceiros, eu mantenho uma lista de favoritos online, locais em que encontrei fontes interessantes para dados. Venho fazendo isto desde 2007. Os links são os seguintes:
-
-* [https://pinboard.in/u:grandeabobora/t:datasets/](https://pinboard.in/u:grandeabobora/t:datasets/)
-
-* [https://pinboard.in/u:grandeabobora/t:database/](https://pinboard.in/u:grandeabobora/t:database/)
-
-Espero que estas informações sejam uteis para vocês. Esta lista não esgota todas as boas fontes de dados abertos na internet. Há muitas outras, tão boas quanto estas que listei, que podem ser encontradas em . 
-
-Caso alguma fonte de dados óbvia tenha faltado, comente aí embaixo que eu atualizo o post com ela.
-
 
 
 # Análise Exploratória dos Dados
@@ -94,7 +47,7 @@ Como não poderia deixar de ser, a primeira parte de um projeto de data science 
 
 O conjunto de dados que vou baixar se chama [Iris Flower Dataset](https://en.wikipedia.org/wiki/Iris_flower_data_set). Por ser multivariado e com um número razoável de observações, este conjunto é bastante famoso na literatura estatística. Até mesmo Fisher já trabalhou conceitos de análise multivariada com estes dados. 
 
-Seu nome é Iris porque foram coletadas observações de 150 espécimes de 3 espécies de flores do gênero iris: _Iris setosa_, _Iris versicolor_ e _Iris virginica_.
+Seu nome é Iris porque foram coletadas observações de 150 sujeitos de 3 espécies de flores do gênero _Iris_: _Iris setosa_, _Iris versicolor_ e _Iris virginica_.
 
 ![Iris setosa](/images/iris-setosa.jpg)
 _Iris setosa_
@@ -106,7 +59,7 @@ _Iris versicolor_
 _Iris virginica_
 
 
-Embora este conjunto de dados esteja disponível em qualquer instalação do R, este tutorial vai mostrar como obter dados diretamente da internet. Então é isto que faremos abaixo, baixando este conjunto iris diretamente do site do [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml/) e processando-o na sequência para análise.
+Embora o conjunto de dados iris esteja disponível em qualquer instalação do R, este tutorial vai mostrar como obter dados diretamente da internet. Então é isto que faremos abaixo, baixando este conjunto iris diretamente do site do [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml/) e processando-o na sequência para análise.
 
 ```{r eda01}
 # definir o endereco do conjunto de dados e baixa-lo
@@ -168,12 +121,14 @@ ggplot(iris, aes(x=c_petala, y=l_petala, colour=especie)) +
   geom_point()
 ```
 
-Agora podemos ver que o grupo de flores da espécie setosa está bastante separado dos demais. Esta é uma informação importante, pois queremos construir um algoritmo de classificação de espécies. Por outro lado, perceba que as espécies versicolor e virginica estão quase se confundindo uma com a outra. Isto pode acabar prejudicando um pouco nosso algoritmo de classificação.
+Agora podemos ver que o grupo de flores da espécie setosa está bastante separado dos demais. Esta é uma informação importante, pois queremos construir um algoritmo de classificação de espécies. Por outro lado, perceba que as espécies versicolor e virginica estão quase se confundindo uma com a outra. Isto pode acabar prejudicando um pouco o desempenho do nosso algoritmo de classificação.
 
 A fim de verificar como é o comportamento das outras variáveis, podemos extender o gráfico anterior para todas a combinações de variáveis neste conjunto de dados. Em vez de repetirmos manualmente o código, vamos utilizar a função `ggpairs` do pacote `GGally`:
 
 ```{r eda05}
 library(GGally)
+
+# remover a variavel especie, pois nao eh quantitativa
 
 ggpairs(iris[, -5], aes(colour = iris$especie))
 ```
@@ -192,9 +147,9 @@ Com a análise exploratória dos dados terminada, podemos partir para o ajuste d
 
 # Ajuste do Modelo
 
-Há uma infinidade de opções quando falamos de ajuste de modelos de classificação. Neste tutorial vou utilizar o [Random Forest (link em inglês, pois a Wikipedia em Português ainda não possui um verbete sobre este assunto)](https://en.wikipedia.org/wiki/Random_forest), que é poderoso o suficiente, além de ter convergência rápida e ser de fácil utilização.
+Há uma infinidade de opções quando falamos de ajuste de modelos de classificação. Neste tutorial vou utilizar o [Random Forest](https://en.wikipedia.org/wiki/Random_forest), que é poderoso o suficiente, além de ter convergência rápida e ser de fácil utilização.
 
-O Random Forest é baseado em árvores de classificação. Sem entrar muito fundo na parte teórica, uma árvore de classificação é um modelo matemático que utiliza a estrutura de árvore de decisão para classificar dados. Melhor do que 
+O Random Forest é baseado em árvores de classificação. Sem entrar muito fundo na parte teórica, uma árvore de classificação é um modelo matemático que utiliza a estrutura de árvore de decisão para classificar dados. Melhor do que explicar isto em palavras é ver o algoritmo em ação:
 
 ```{r arvore}
 library(rpart)
@@ -203,7 +158,7 @@ modelo <- rpart(especie ~ ., method="class", data=iris)
 prp(modelo, extra=1)
 ```
 
-Perceba que é feita uma pergunta em cada nó da árvore. O resultado da pergunta determina se outra pergunta será feita ou se a árvore chegou ao fim e a classificação foi terminada. Além disso, o erro de classificação é determinado ao final da árvore.
+Perceba que é feita uma pergunta em cada nó da árvore. A resposta da pergunta determina se outra pergunta será feita ou se a árvore chegou ao fim e a classificação foi terminada. Além disso, o erro de classificação é determinado ao final da árvore.
 
 Uma Random Forest (ou Floresta Aleatória) é a combinação de centenas de árvores de classificação. Este resultado segue do fato de que a combinação de diversos modelos diferentes é melhor do que um modelo sozinho.
 
@@ -215,7 +170,7 @@ Um problema que surge no ajuste de modelos de classificação e regressão é o 
 
 O gráfico abaixo ilustra este conceito no contexto de um modelo de classificação.
 
-```{r sobreajuste, echo=FALSE}
+```{r sobreajuste, echo=FALSE, warning=FALSE}
 ajuste_lm   <- lm(dist ~ speed, data=cars)
 ajuste_poly <- lm(dist ~ poly(speed, 20, raw=TRUE), data=cars)
 
@@ -257,7 +212,7 @@ Ocorre que esta divisão dos dados em dois grupos tem uma desvantagem. Isto acab
 
 ## Validação Cruzada
 
-A [validação cruzada](https://pt.wikipedia.org/wiki/Valida%C3%A7%C3%A3o_cruzada) é mais um método utilizado para evitar sobreajuste no modelo. A ideia é ajustar diversas vezes o mesmo modelo em partições (conjuntos mutuamente exclusivos) do conjunto de treinamento original. Neste exemplo eu vou utilizar um método chamado validação cruzada $k$-fold_.
+A [validação cruzada](https://pt.wikipedia.org/wiki/Valida%C3%A7%C3%A3o_cruzada) é mais um método utilizado para evitar sobreajuste no modelo. A ideia é ajustar diversas vezes o mesmo modelo em partições (conjuntos mutuamente exclusivos) do conjunto de treinamento original. Neste exemplo eu vou utilizar um método chamado validação cruzada $k$-_fold_.
 
 Esta técnica consiste em cinco passos:
 
@@ -321,9 +276,11 @@ Para saber o resultado do ajuste, basta chamar o objeto ajuste_iris:
 ajuste_iris
 ```
 
-Durante este tutorial, iremos ignorar o que significa `mtry`. Apenas vamos assumir que o melhor modelo é aquele que tem este valor igual a 3.
+Note que há um parâmetro chamado `mtry` no output acima. Este parâmetro significa que os modelos foram ajustados com 2, 3 e 4 variáveis preditoras selecionadas aleatoriamente (na verdade, quando `mtry` = 4 temos todas as variáveis preditoras utilizadas no modelo). Ao final, o melhor modelo é aquele que utiliza 2 variáveis preditoras. 
 
-Veja que aparecem duas medidas a respeito da qualidade da predição realizada. Para entendê-las, considere a tabela abaixo:
+Este resultado pode variar dependendo de como os dados foram selecionados durante as criação do conjunto de treinamento e teste e também de como a validação cruzada foi realizada, principalmente se estivermos com conjuntos de dados pequenos como este que utilizamos neste projeto.
+
+Além disso, note que aparecem duas medidas a respeito da qualidade da predição realizada. Para entendê-las, considere a tabela abaixo:
 
 \begin{center}
 \begin{tabular}{lccc}\cline{2-4}
@@ -365,7 +322,7 @@ $$Kappa = \frac{p_0-p_e}{1-p_e}.$$
 
 Para não me alongar ainda mais, vou deixar a explicação da acurácia e do Kappa em aberto, mas basta saber que tanto a acurácia quanto o Kappa variam entre 0 e 1. Não obstante, quanto maiores estes valores, melhor é o ajuste do modelo.
 
-Finalizamos o ajuste testando se este modelo criado por nós é capaz de classificar novos dados. Para isto, vamos utilizar o conjunto de teste definido anteriormente:
+Finalizamos o ajuste testando se este modelo criado é capaz de classificar novos dados. Para isto, vamos utilizar o conjunto de teste definido anteriormente:
 
 ```{r ajuste04}
 predicao <- predict(ajuste_iris, iris_teste)
@@ -387,8 +344,45 @@ Como podemos ver, as variáveis relacionadas à pétala são mais importantes do
 
 # Ideias para Novos Projetos
 
-Agora que o seu primeiro projeto de data science está completo, o céu é o limite. Leia livros sobre o assunto, [me contrate](http://marcusnunes.me/contato/) para dar um curso mais avançado ou simplesmente visite o [Kaggle](https://kaggle.com/datasets/) e vá atrás de novos assuntos para trabalhar.
+Este texto que publiquei não toca em vários assuntos concernentes ao ajuste de modelos de aprendizagem de máquina. Por exemplo, eu não comentei sobre paralelização de código, não fui a fundo na descrição do modelo e não falei sobre o tuning dos hiperparâmetros da Random Forest. Tratarei destes assuntos em outra oportunidade.
+
+Obter dados para análise é algo trivial hoje em dia. Existem diversos sites que disponibilizam todo tipo de dados para as mais diversas tarefas. Abaixo eu listo algumas das minhas fontes preferidas para buscar dados abertos, colocadas mais ou menos em ordem de preferência e importância:
+
+* [Kaggle](https://kaggle.com/datasets/): Acredito que este seja, atualmente, o maior site sobre machine learning no mundo. Possui muitos conjuntos de dados disponíveis, nas mais variadas áreas. Além dos dados, há diversos projetos de machine learning já realizados nele, fazendo com que seja uma fonte quase inesgotável de informação.
+
+* [UCI Machine Learning Repository](http://archive.ics.uci.edu/ml/): Este é o pai do Kaggle. Na época em que fiz meu primeiro curso de data mining, ainda durante meu doutorado no longínquo ano de 2010, este site era minha fonte principal de conjuntos de dados para classificação e clusterização.
+
+* [Instituto Brasileiro de Geografia e Estatística (IBGE)](http://downloads.ibge.gov.br/): O site do IBGE disponibiliza informações sobre os censos, PNAD e tudo mais que o IBGE trabalha.
+
+* [Portal Brasileiro de Dados Abertos](http://dados.gov.br): Informações oficiais do governo brasileiro sobre mapas, orçamento da união, aviação, dentre outros assuntos.
+
+* [Portal da Transparência](http://www.transparencia.gov.br/): Dados do executivos brasileiro, como salários, pagamentos de programas sociais e muito mais.
+
+<!--
+* [Banco Central do Brasil](http://www4.bcb.gov.br/pec/series/port/aviso.asp): Dados históricos sobre inflação, câmbio, exportações e mais.
 
 
+* [Dados Abertos da Câmara dos Deputados](http://www2.camara.leg.br/transparencia/cota-para-exercicio-da-atividade-parlamentar/dados-abertos-cota-parlamentar): Informações a respeitos dos gastos da Câmara. Embora sejam abertos, é um pouco difícil de acessar para quem não entende de tecnologias como xml e json. Por isso, escrevi um [pacote no R](https://github.com/mnunes/reembolsos/) que organiza estes dados de maneira a torná-los mais acessíveis.
 
+* [Gene Expression Omnibus (GEO)](http://www.ncbi.nlm.nih.gov/geo/): Fonte de dados genéticos. É possível encontrar dados de artigos científicos e reproduzir os resultados obtidos pelos autores.
+
+* [The home of the U.S. Government’s open data](http://www.data.gov/): Site de dados abertos do governo norte-americano. Possui milhares de conjuntos de dados.
+
+* [IMDb](http://www.imdb.com/interfaces): Dados abertos que o [IMDb](http://imdb.com/), site especializado em filmes e séries de TV, disponibiliza. Vale muito pelas avaliações que os usuários do site dão para as produções audiovisuais cadastradas no site. 
+
+* [Economic Time Series Page](http://www.economagic.com/): Dados de séries temporais econométricas.
+
+* [Time Series Data Library](https://datamarket.com/data/list/?q=provider:tsdl): Fonte excelente para quem procura dados de séries temporais, sejam eles econométricos ou não.-->
+
+Além destas fontes de terceiros, eu mantenho uma lista de favoritos online, locais em que encontrei fontes interessantes para dados. Venho fazendo isto desde 2007. Os links são os seguintes:
+
+* [https://pinboard.in/u:grandeabobora/t:datasets/](https://pinboard.in/u:grandeabobora/t:datasets/)
+
+* [https://pinboard.in/u:grandeabobora/t:database/](https://pinboard.in/u:grandeabobora/t:database/)
+
+Espero que estas informações sejam uteis para vocês. Esta lista não esgota todas as boas fontes de dados abertos na internet. Há muitas outras, tão boas quanto estas que listei, que podem ser encontradas em . 
+
+Caso alguma fonte de dados óbvia tenha faltado, comente aí embaixo que eu atualizo o post com ela.
+
+Agora que o seu primeiro projeto de data science está completo, o céu é o limite. Leia livros sobre o assunto, [me contrate](http://marcusnunes.me/contato/) para te dar um curso mais avançado ou simplesmente visite o [Kaggle](https://kaggle.com/datasets/) e escolha um novo assunto de seu interesse para trabalhar.
 
